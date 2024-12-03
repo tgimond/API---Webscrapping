@@ -23,7 +23,9 @@ def load_iris_dataset() -> pd.DataFrame:
 def process_iris_dataset(df: pd.DataFrame) -> pd.DataFrame:
     # Renommer les colonnes contenant "iris"
     try:
-        df_processed = df.rename(columns=lambda x: x.replace('iris', ''))
+        df_processed = df.rename(columns=lambda x: x.replace('iris-', ''))
+        # Enlever "iris-" dans les noms des espèces
+        df_processed['Species'] = df_processed['Species'].str.replace('iris-', '', case=False)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing dataset: {str(e)}")
 
