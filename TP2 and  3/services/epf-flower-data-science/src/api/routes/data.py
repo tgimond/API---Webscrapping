@@ -4,7 +4,7 @@ import os
 import pandas as pd
 import opendatasets as od
 from fastapi.encoders import jsonable_encoder
-from src.services.data import load_iris_dataset, process_iris_dataset, split_iris_dataset, train_model
+from src.services.data import load_iris_dataset, process_iris_dataset, split_iris_dataset, train_model, predict_with_model
 from io import StringIO
 import json
 
@@ -13,6 +13,9 @@ router = APIRouter()
 class DatasetInfo(BaseModel):
     name: str
     url: str
+
+class PredictionRequest(BaseModel):
+    data: list
 
 @router.get("/download-dataset")
 async def download_dataset():
@@ -191,3 +194,12 @@ async def train_iris_model():
         raise e
 
     return {"message": "Model trained and saved successfully", "model_path": model_path}
+
+@router.post("/predict")
+async def predict(request: PredictionRequest):
+    try:
+        predictions = predict_with_model(request.data)
+    except HTTPException as e:
+        raise e
+
+    return {"predictions": predictions}

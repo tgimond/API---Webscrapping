@@ -69,3 +69,22 @@ def train_model(X_train: pd.DataFrame, y_train: pd.Series) -> str:
     joblib.dump(model, model_path)
 
     return model_path
+
+def predict_with_model(data: list) -> list:
+    model_path = os.path.join(os.path.dirname(__file__), '../models/iris_model.pkl')
+
+    if not os.path.exists(model_path):
+        raise HTTPException(status_code=404, detail="Model file not found")
+
+    try:
+        model = joblib.load(model_path)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading model: {str(e)}")
+
+    try:
+        data_df = pd.DataFrame(data)
+        predictions = model.predict(data_df)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error making predictions: {str(e)}")
+
+    return predictions.tolist()
