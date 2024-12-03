@@ -3,6 +3,8 @@ import json
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import opendatasets as od
+import pandas as pd
+from src.services.data import load_iris_dataset
 
 router = APIRouter()
 
@@ -214,3 +216,13 @@ async def update_dataset(dataset: DatasetInfo):
         raise HTTPException(status_code=500, detail=f"Error writing to config file: {str(e)}")
 
     return {"message": "Dataset updated successfully"}
+
+@router.get("/load-iris-dataset")
+async def load_iris_dataset_endpoint():
+    try:
+        df = load_iris_dataset()
+    except HTTPException as e:
+        raise e
+
+    # Renvoie le dataset sous forme de JSON
+    return df.to_json(orient='split')

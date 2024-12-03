@@ -2,5 +2,9 @@
     "iris": {
         "name": "iris",
         "url": "https://www.kaggle.com/datasets/uciml/updated-iris"
+    },
+    "string": {
+        "name": "string",
+        "url": "https://kaggle.blabla"
     }
 }
