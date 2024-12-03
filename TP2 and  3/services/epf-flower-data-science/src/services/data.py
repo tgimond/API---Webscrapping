@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 from fastapi import HTTPException
+from sklearn.model_selection import train_test_split
+
 
 def load_iris_dataset() -> pd.DataFrame:
     data_dir = os.path.join(os.path.dirname(__file__), '../data/iris')
@@ -17,3 +19,27 @@ def load_iris_dataset() -> pd.DataFrame:
         raise HTTPException(status_code=500, detail=f"Error loading dataset: {str(e)}")
 
     return df
+
+def process_iris_dataset(df: pd.DataFrame) -> pd.DataFrame:
+    # Renommer les colonnes contenant "iris"
+    try:
+        df_processed = df.rename(columns=lambda x: x.replace('iris', ''))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing dataset: {str(e)}")
+
+    return df_processed
+
+def split_iris_dataset(df: pd.DataFrame) -> dict:
+    try:
+        X = df.drop(columns=['Species'])
+        y = df['Species']
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing dataset: {str(e)}")
+
+    return {
+        "X_train": X_train.to_json(orient='split'),
+        "X_test": X_test.to_json(orient='split'),
+        "y_train": y_train.to_json(orient='split'),
+        "y_test": y_test.to_json(orient='split')
+    }

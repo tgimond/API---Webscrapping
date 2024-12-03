@@ -4,7 +4,9 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import opendatasets as od
 import pandas as pd
-from src.services.data import load_iris_dataset
+from fastapi.encoders import jsonable_encoder
+
+from src.services.data import load_iris_dataset, process_iris_dataset, split_iris_dataset
 
 router = APIRouter()
 
@@ -226,3 +228,25 @@ async def load_iris_dataset_endpoint():
 
     # Renvoie le dataset sous forme de JSON
     return df.to_json(orient='split')
+
+@router.get("/process-iris-dataset")
+async def process_iris_dataset_endpoint():
+    try:
+        df = load_iris_dataset()
+        df_processed = process_iris_dataset(df)
+    except HTTPException as e:
+        raise e
+
+    # Utiliser jsonable_encoder pour encoder les données avant de les renvoyer
+    return jsonable_encoder(df_processed.to_dict(orient='split'))
+
+@router.get("/split-iris-dataset")
+async def split_iris_dataset_endpoint():
+    try:
+        df = load_iris_dataset()
+        split_data = split_iris_dataset(df)
+    except HTTPException as e:
+        raise e
+
+    # Renvoie les ensembles d'entraînement et de test sous forme de JSON
+    return split_data
