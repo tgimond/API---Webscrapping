@@ -3,8 +3,14 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch, mock_open
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../')))
+
 from src.api.routes.data import router, DatasetInfo
 from src.app import get_application
+
 
 app = get_application()
 app.include_router(router, prefix="/data")

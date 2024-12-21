@@ -3,11 +3,17 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch, mock_open
+import pandas as pd
+from io import StringIO
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../')))
+
 from src.api.routes.data import router
 from src.services.data import load_iris_dataset, process_iris_dataset, split_iris_dataset, train_model
 from src.app import get_application
-import pandas as pd
-from io import StringIO
+
 
 app = get_application()
 app.include_router(router, prefix="/data")
